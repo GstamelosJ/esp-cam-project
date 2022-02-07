@@ -13,6 +13,7 @@
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
+#include "driver/rtc_io.h"
 #include "esp_camera.h"
 
 const char* ssid = "REPLACE_WITH_YOUR_SSID";
@@ -52,6 +53,10 @@ const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
 
 void setup() {
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+  rtc_gpio_hold_en(GPIO_NUM_4);
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
 
@@ -137,7 +142,7 @@ String sendPhoto() {
   if (client.connect(serverName.c_str(), serverPort)) {
     Serial.println("Connection successful!");    
     String head = "--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--RandomNerdTutorials--\r\n";
+    String tail = "\r\n--Gstam--\r\n";
 
     uint32_t imageLen = fb->len;
     uint32_t extraLen = head.length() + tail.length();
@@ -146,7 +151,7 @@ String sendPhoto() {
     client.println("POST " + serverPath + " HTTP/1.1");
     client.println("Host: " + serverName);
     client.println("Content-Length: " + String(totalLen));
-    client.println("Content-Type: multipart/form-data; boundary=RandomNerdTutorials");
+    client.println("Content-Type: multipart/form-data; boundary=gstam");
     client.println();
     client.print(head);
   
