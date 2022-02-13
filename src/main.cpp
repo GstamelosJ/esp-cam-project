@@ -47,16 +47,16 @@ WiFiClient client;
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+
+#define TIME_TO_SLEEP  10            //time ESP32 will go to sleep (in seconds)
+#define uS_TO_S_FACTOR 1000000ULL   //conversion factor for micro seconds to seconds */
 String sendPhoto();
 
 const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
 
 void setup() {
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-  rtc_gpio_hold_en(GPIO_NUM_4);
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
+  
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
 
@@ -95,6 +95,10 @@ void setup() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
+   pinMode(4, INPUT);
+  digitalWrite(4, LOW);
+  rtc_gpio_hold_dis(GPIO_NUM_4);
+
   // init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_SVGA;
@@ -111,18 +115,29 @@ void setup() {
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
     delay(1000);
+
     ESP.restart();
   }
-
   sendPhoto(); 
+
+    pinMode(4, OUTPUT);
+    digitalWrite(4, LOW);
+    rtc_gpio_hold_en(GPIO_NUM_4);
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
+    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+    Serial.println("Going to sleep now");
+    delay(1000);
+    esp_deep_sleep_start();
+    Serial.println("This will never be printed");
+  
 }
 
 void loop() {
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= timerInterval) {
-    sendPhoto();
-    previousMillis = currentMillis;
-  }
+  ////unsigned long currentMillis = millis();
+  //if (currentMillis - previousMillis >= timerInterval) {
+  //  sendPhoto();
+   // previousMillis = currentMillis;
+ // }
 }
 
 String sendPhoto() {
