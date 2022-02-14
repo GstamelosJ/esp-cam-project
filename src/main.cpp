@@ -138,6 +138,9 @@ void loop() {
   //  sendPhoto();
    // previousMillis = currentMillis;
  // }
+  Serial.print("RSSI: ");
+  Serial.println(WiFi.RSSI());
+  delay(1000);
 }
 
 String sendPhoto() {
