@@ -16,10 +16,10 @@
 #include "driver/rtc_io.h"
 #include "esp_camera.h"
 
-const char* ssid = "REPLACE_WITH_YOUR_SSID";
-const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+const char* ssid = "COSMOTE-189DDC_AC";
+const char* password = "UXYebdfUddddKqAq";
 
-String serverName = "192.168.1.XXX";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
+String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
 
 String serverPath = "/upload.php";     // The default serverPath should be upload.php
