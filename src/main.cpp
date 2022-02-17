@@ -48,7 +48,7 @@ WiFiClient client;
 #define PCLK_GPIO_NUM     22
 
 
-#define TIME_TO_SLEEP  10            //time ESP32 will go to sleep (in seconds)
+#define TIME_TO_SLEEP  60            //time ESP32 will go to sleep (in seconds)
 #define uS_TO_S_FACTOR 1000000ULL   //conversion factor for micro seconds to seconds */
 String sendPhoto();
 
@@ -95,14 +95,12 @@ void setup() {
   config.xclk_freq_hz = 16500000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-   pinMode(4, INPUT);
-  digitalWrite(4, LOW);
-  rtc_gpio_hold_dis(GPIO_NUM_4);
+
 
   // init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
-    config.jpeg_quality = 2; //originally 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 5; //originally 10;  //0-63 lower number means higher quality
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_CIF;
@@ -143,14 +141,20 @@ s->set_hmirror(s, 0);        // 0 = disable , 1 = enable
 s->set_vflip(s, 0);          // 0 = disable , 1 = enable
 s->set_dcw(s, 1);            // 0 = disable , 1 = enable
 s->set_colorbar(s, 0);       // 0 = disable , 1 = enable
-
+delay(5000);
+pinMode(4, INPUT);
+digitalWrite(4, LOW);
+rtc_gpio_hold_dis(GPIO_NUM_4);
 //------------------------------------------
+Serial.print("RSSI: ");
+  Serial.println(WiFi.RSSI());
+  delay(1000);
   sendPhoto(); 
 
     pinMode(4, OUTPUT);
     digitalWrite(4, LOW);
     rtc_gpio_hold_en(GPIO_NUM_4);
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
+    //esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
     Serial.println("Going to sleep now");
     delay(1000);
@@ -165,9 +169,7 @@ void loop() {
   //  sendPhoto();
    // previousMillis = currentMillis;
  // }
-  Serial.print("RSSI: ");
-  Serial.println(WiFi.RSSI());
-  delay(1000);
+  
 }
 
 String sendPhoto() {
@@ -187,7 +189,7 @@ String sendPhoto() {
   if (client.connect(serverName.c_str(), serverPort)) {
     Serial.println("Connection successful!");    
     String head = "--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--Gstam--\r\n";
+    String tail = "\r\n--RandomNerdTutorials--\r\n";
 
     uint32_t imageLen = fb->len;
     uint32_t extraLen = head.length() + tail.length();
@@ -196,7 +198,7 @@ String sendPhoto() {
     client.println("POST " + serverPath + " HTTP/1.1");
     client.println("Host: " + serverName);
     client.println("Content-Length: " + String(totalLen));
-    client.println("Content-Type: multipart/form-data; boundary=gstam");
+    client.println("Content-Type: multipart/form-data; boundary=RandomNerdTutorials");
     client.println();
     client.print(head);
   
