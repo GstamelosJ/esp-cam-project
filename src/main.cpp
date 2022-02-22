@@ -15,9 +15,15 @@
 #include "soc/rtc_cntl_reg.h"
 #include "driver/rtc_io.h"
 #include "esp_camera.h"
+#define CAMERA_MODEL_AI_THINKER
+//#define CAMERA_MODEL_WROVER_KIT 
+//#include "camera_pins.h"
 
 const char* ssid = "COSMOTE-189DDC_AC";
 const char* password = "UXYebdfUddddKqAq";
+
+//const char* ssid = "conn-xe73110";
+//const char* password = "dc028ee73110";
 
 String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
@@ -27,6 +33,7 @@ String serverPath = "/upload.php";     // The default serverPath should be uploa
 const int serverPort = 80;
 
 WiFiClient client;
+
 
 // CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
@@ -46,6 +53,7 @@ WiFiClient client;
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
+#define POWER_DOWN_NUM 26
 
 
 #define TIME_TO_SLEEP  60            //time ESP32 will go to sleep (in seconds)
@@ -72,7 +80,7 @@ void setup() {
   Serial.println();
   Serial.print("ESP32-CAM IP Address: ");
   Serial.println(WiFi.localIP());
-
+  delay(2000);
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -107,7 +115,7 @@ void setup() {
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
   }
-  
+  delay(2000);
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
@@ -117,8 +125,7 @@ void setup() {
     ESP.restart();
   }
   //adjustments---------
-  sensor_t * s = esp_camera_sensor_get();
-
+ sensor_t * s = esp_camera_sensor_get();
 s->set_brightness(s, 0);     // -2 to 2
 s->set_contrast(s, 0);       // -2 to 2
 s->set_saturation(s, 0);     // -2 to 2
@@ -141,6 +148,9 @@ s->set_hmirror(s, 0);        // 0 = disable , 1 = enable
 s->set_vflip(s, 0);          // 0 = disable , 1 = enable
 s->set_dcw(s, 1);            // 0 = disable , 1 = enable
 s->set_colorbar(s, 0);       // 0 = disable , 1 = enable
+//s->set_reg(s,0xff,0xff,0x00);//banksel
+//s->set_reg(s,0xd3,0xff,0x82);//clock
+
 delay(5000);
 pinMode(4, INPUT);
 digitalWrite(4, LOW);
