@@ -19,11 +19,11 @@
 //#define CAMERA_MODEL_WROVER_KIT 
 //#include "camera_pins.h"
 
-const char* ssid = "COSMOTE-189DDC_AC";
-const char* password = "UXYebdfUddddKqAq";
+//const char* ssid = "COSMOTE-189DDC_AC";
+//const char* password = "UXYebdfUddddKqAq";
 
-//const char* ssid = "conn-xe73110";
-//const char* password = "dc028ee73110";
+const char* ssid = "conn-xe73110";
+const char* password = "dc028ee73110";
 
 String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
@@ -108,24 +108,24 @@ void setup() {
   // init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
-    config.jpeg_quality = 5; //originally 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 6; //originally 10;  //0-63 lower number means higher quality
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
   }
-  delay(2000);
+  //delay(2000);
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
+    //delay(1000);
 
     ESP.restart();
   }
   //adjustments---------
- sensor_t * s = esp_camera_sensor_get();
+ /*sensor_t * s = esp_camera_sensor_get();
 s->set_brightness(s, 0);     // -2 to 2
 s->set_contrast(s, 0);       // -2 to 2
 s->set_saturation(s, 0);     // -2 to 2
@@ -147,7 +147,7 @@ s->set_lenc(s, 1);           // 0 = disable , 1 = enable
 s->set_hmirror(s, 0);        // 0 = disable , 1 = enable
 s->set_vflip(s, 0);          // 0 = disable , 1 = enable
 s->set_dcw(s, 1);            // 0 = disable , 1 = enable
-s->set_colorbar(s, 0);       // 0 = disable , 1 = enable
+s->set_colorbar(s, 0);       // 0 = disable , 1 = enable*/
 //s->set_reg(s,0xff,0xff,0x00);//banksel
 //s->set_reg(s,0xd3,0xff,0x82);//clock
 
@@ -228,7 +228,7 @@ String sendPhoto() {
     
     esp_camera_fb_return(fb);
     
-    int timoutTimer = 10000;
+    int timoutTimer = 4000;
     long startTimer = millis();
     boolean state = false;
     
