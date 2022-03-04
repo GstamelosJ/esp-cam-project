@@ -67,7 +67,8 @@ void setup() {
   
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
-
+  int timoutTimer = 40000;
+  long startTimer = millis();
   WiFi.mode(WIFI_STA);
   Serial.println();
   Serial.print("Connecting to ");
@@ -76,6 +77,7 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(500);
+    if ((startTimer+timoutTimer) < millis()) ESP.restart();
   }
   Serial.println();
   Serial.print("ESP32-CAM IP Address: ");
@@ -218,10 +220,12 @@ String sendPhoto() {
       if (n+1024 < fbLen) {
         client.write(fbBuf, 1024);
         fbBuf += 1024;
+        Serial.printf("fb->len = %d", n);
       }
       else if (fbLen%1024>0) {
         size_t remainder = fbLen%1024;
         client.write(fbBuf, remainder);
+        Serial.printf("reminder->len = %d", fbLen-n);
       }
     }   
     client.print(tail);
