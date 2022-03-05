@@ -210,6 +210,8 @@ String sendPhoto() {
     client.println("POST " + serverPath + " HTTP/1.1");
     client.println("Host: " + serverName);
     client.println("Content-Length: " + String(totalLen));
+    //client.println("Keep-Alive: timeout=5, max=38");
+    client.println("Connection: Keep-Alive");
     client.println("Content-Type: multipart/form-data; boundary=RandomNerdTutorials");
     client.println();
     client.print(head);
