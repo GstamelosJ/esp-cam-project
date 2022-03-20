@@ -469,7 +469,7 @@ void FTP_upload()
   
   //Create a file and write the image data to it;
   ftp.InitFile("Type I");
-  //ftp.ChangeWorkDir("/public_html/zyro/gallery_gen/"); // change it to reflect your directory
+  ftp.ChangeWorkDir("/home/uploads/"); // change it to reflect your directory
   const char *f_name = pic_name.c_str();
   ftp.NewFile( f_name );
   if(ftp.isConnected()) ftp.WriteData(fb->buf, fb->len);
