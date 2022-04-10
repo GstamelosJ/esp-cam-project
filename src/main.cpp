@@ -44,11 +44,11 @@ bool capture_still();
 bool motion_detect();
 void update_frame();
 void print_frame(uint16_t frame[H][W]);
-//const char* ssid = "COSMOTE-189DDC_AC";
-//const char* password = "UXYebdfUddddKqAq";
+const char* ssid = "COSMOTE-189DDC_AC";
+const char* password = "UXYebdfUddddKqAq";
 
-const char* ssid = "conn-xe73110";
-const char* password = "dc028ee73110";
+//const char* ssid = "conn-xe73110";
+//const char* password = "dc028ee73110";
 
 char ftp_server[] = "192.168.1.28";
 char ftp_user[]   = "esp32cam";
@@ -56,7 +56,7 @@ char ftp_pass[]   = "esp32cam";
 
 // Camera buffer, URL and picture name
 camera_fb_t *fb = NULL;
-String pic_name = "esp32_cam";
+String pic_name = "esp32_cam2-";
 
 String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
@@ -197,7 +197,7 @@ s->set_colorbar(s, 0);       // 0 = disable , 1 = enable*/
 //s->set_reg(s,0xff,0xff,0x00);//banksel
 //s->set_reg(s,0xd3,0xff,0x82);//clock
 
-delay(5000);
+delay(1000);
 //pinMode(4, INPUT);
 //digitalWrite(4, LOW);
 //rtc_gpio_hold_dis(GPIO_NUM_4);
@@ -212,11 +212,11 @@ Serial.print("RSSI: ");
     {
       FTP_upload();
     }
-    if (millis() - last >= 180000)
+    /*if (millis() - last >= 180000)
   {
     esp_task_wdt_reset();
     last = millis();
-  }
+  }*/
     //pinMode(4, OUTPUT);
     //digitalWrite(4, LOW);
     //rtc_gpio_hold_en(GPIO_NUM_4);
@@ -458,7 +458,7 @@ bool take_picture()
   pic_name += String( timestamp ) + String(WiFi.RSSI())+ ".jpg";
   Serial.print("Camera capture success, saved as:");
   Serial.print( pic_name );
-  esp_camera_fb_return(fb);
+  
 
   return true;
 }
@@ -476,7 +476,9 @@ void FTP_upload()
   if(ftp.isConnected()) ftp.WriteData(fb->buf, fb->len);
   else Serial.print("FTP connection Failed");
   ftp.CloseFile();
-  ftp.CloseConnection();
+  //ftp.CloseConnection();
   delay(100);
   Serial.println("The FTP uploading completed");
+  esp_task_wdt_reset();
+  esp_camera_fb_return(fb);
 }
