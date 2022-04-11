@@ -44,7 +44,7 @@ bool capture_still();
 bool motion_detect();
 void update_frame();
 void print_frame(uint16_t frame[H][W]);
-const char* ssid = "COSMOTE-189DDC_AC";
+const char* ssid = "COSMOTE-189DDC";
 const char* password = "UXYebdfUddddKqAq";
 
 //const char* ssid = "conn-xe73110";
@@ -142,7 +142,7 @@ void setup() {
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 16500000; //originally set to 20000000;
+  config.xclk_freq_hz = 20000000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
 
@@ -151,7 +151,7 @@ void setup() {
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
     config.jpeg_quality = 8; //originally 10;  //0-63 lower number means higher quality
-    config.fb_count = 2;
+    config.fb_count = 1;
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
@@ -476,7 +476,7 @@ void FTP_upload()
   if(ftp.isConnected()) ftp.WriteData(fb->buf, fb->len);
   else Serial.print("FTP connection Failed");
   ftp.CloseFile();
-  //ftp.CloseConnection();
+  ftp.CloseConnection();
   delay(100);
   Serial.println("The FTP uploading completed");
   esp_task_wdt_reset();
