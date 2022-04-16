@@ -101,7 +101,7 @@ String sendPhoto();
 
 const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
-ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass);
+ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
 
 void setup() {
   
@@ -142,7 +142,7 @@ void setup() {
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000; //originally set to 20000000;
+  config.xclk_freq_hz = 10000000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
 
@@ -150,7 +150,7 @@ void setup() {
   // init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
-    config.jpeg_quality = 8; //originally 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 9; //originally 10;  //0-63 lower number means higher quality
     config.fb_count = 1;
   } else {
     config.frame_size = FRAMESIZE_CIF;
@@ -166,6 +166,7 @@ void setup() {
     //delay(1000);
 
     ESP.restart();
+    
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
   esp_task_wdt_add(NULL); //add current thread to WDT watch
