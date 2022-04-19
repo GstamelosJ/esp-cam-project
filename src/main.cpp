@@ -147,10 +147,11 @@ void setup() {
 
 
 
-  // init with high specs to pre-allocate larger buffers
+  // init with high specs to pre-allocate larger buffersfreq
+
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
-    config.jpeg_quality = 9; //originally 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 6; //originally 10;  //0-63 lower number means higher quality
     config.fb_count = 1;
   } else {
     config.frame_size = FRAMESIZE_CIF;
@@ -172,8 +173,8 @@ void setup() {
   esp_task_wdt_add(NULL); //add current thread to WDT watch
 
   //adjustments---------
- /*sensor_t * s = esp_camera_sensor_get();
-s->set_brightness(s, 0);     // -2 to 2
+sensor_t * s = esp_camera_sensor_get();
+/*s->set_brightness(s, 0);     // -2 to 2
 s->set_contrast(s, 0);       // -2 to 2
 s->set_saturation(s, 0);     // -2 to 2
 s->set_special_effect(s, 0); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
@@ -197,6 +198,7 @@ s->set_dcw(s, 1);            // 0 = disable , 1 = enable
 s->set_colorbar(s, 0);       // 0 = disable , 1 = enable*/
 //s->set_reg(s,0xff,0xff,0x00);//banksel
 //s->set_reg(s,0xd3,0xff,0x82);//clock
+s->set_quality(s,9);
 
 delay(1000);
 //pinMode(4, INPUT);
