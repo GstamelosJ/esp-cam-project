@@ -122,9 +122,9 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    //delay(1000);
+    delay(1000);
 
-    ESP.restart();
+    //ESP.restart();
   }
   //adjustments---------
  /*sensor_t * s = esp_camera_sensor_get();
@@ -261,5 +261,6 @@ String sendPhoto() {
     getBody = "Connection to " + serverName +  " failed.";
     Serial.println(getBody);
   }
+  free(fb);
   return getBody;
 }
