@@ -101,7 +101,7 @@ String sendPhoto();
 
 const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
-ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
+ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass);
 
 void setup() {
   
@@ -142,7 +142,7 @@ void setup() {
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 10000000; //originally set to 20000000;
+  config.xclk_freq_hz = 20000000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
 
@@ -151,28 +151,27 @@ void setup() {
 
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
-    config.jpeg_quality = 6; //originally 10;  //0-63 lower number means higher quality
-    config.fb_count = 1;
+    config.jpeg_quality = 9; //originally 10;  //0-63 lower number means higher quality
+    config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
   }
   configTime(gmtoffset_sec, daylightOffset_sec, ntpServer);
-  //delay(2000);
+  delay(1000);
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
     delay(1000);
-
-    //ESP.restart();
+    ESP.restart();
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
   esp_task_wdt_add(NULL); //add current thread to WDT watch
 
   //adjustments---------
-sensor_t * s = esp_camera_sensor_get();
+//sensor_t * s = esp_camera_sensor_get();
 /*s->set_brightness(s, 0);     // -2 to 2
 s->set_contrast(s, 0);       // -2 to 2
 s->set_saturation(s, 0);     // -2 to 2
@@ -197,7 +196,7 @@ s->set_dcw(s, 1);            // 0 = disable , 1 = enable
 s->set_colorbar(s, 0);       // 0 = disable , 1 = enable*/
 //s->set_reg(s,0xff,0xff,0x00);//banksel
 //s->set_reg(s,0xd3,0xff,0x82);//clock
-s->set_quality(s,9);
+//s->set_quality(s,9);
 
 delay(1000);
 //pinMode(4, INPUT);
