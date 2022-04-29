@@ -44,11 +44,11 @@ bool capture_still();
 bool motion_detect();
 void update_frame();
 void print_frame(uint16_t frame[H][W]);
-//const char* ssid = "COSMOTE-189DDC";
-//const char* password = "UXYebdfUddddKqAq";
+const char* ssid = "COSMOTE-189DDC";
+const char* password = "UXYebdfUddddKqAq";
 
-const char* ssid = "conn-xe73110";
-const char* password = "dc028ee73110";
+//const char* ssid = "conn-xe73110";
+//const char* password = "dc028ee73110";
 
 char ftp_server[] = "192.168.1.28";
 char ftp_user[]   = "esp32cam";
@@ -56,7 +56,7 @@ char ftp_pass[]   = "esp32cam";
 
 // Camera buffer, URL and picture name
 camera_fb_t *fb = NULL;
-String pic_name = "esp32_cam";
+String pic_name = "esp32_cam2-";
 
 String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
@@ -101,7 +101,7 @@ String sendPhoto();
 
 const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
-ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass);
+ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
 
 void setup() {
   
@@ -152,24 +152,26 @@ void setup() {
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
     config.jpeg_quality = 9; //originally 10;  //0-63 lower number means higher quality
-    config.fb_count = 2;
+    config.fb_count = 1;
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
   }
   configTime(gmtoffset_sec, daylightOffset_sec, ntpServer);
-  delay(1000);
+  //delay(2000);
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
+    //delay(1000);
+
     ESP.restart();
+    
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
-  esp_task_wdt_add(NULL); //add current thread to WDT watch
-
+  esp_task_wdt_add(FTP_upload); //add current thread to WDT watch
+  esp_task_wdt_add(take_picture); //add current thread to WDT watch
   //adjustments---------
 //sensor_t * s = esp_camera_sensor_get();
 /*s->set_brightness(s, 0);     // -2 to 2
@@ -253,7 +255,7 @@ void loop() {
   */
 }
 
-String sendPhoto() {
+/*String sendPhoto() {
   String getAll;
   String getBody;
 
@@ -330,7 +332,6 @@ String sendPhoto() {
     getBody = "Connection to " + serverName +  " failed.";
     Serial.println(getBody);
   }
-  free(fb);
   return getBody;
 }
 
@@ -373,14 +374,14 @@ bool capture_still() {
     esp_camera_fb_return(frame_buffer);
 
     return true;
-}
+}*/
 
 
 /**
  * Compute the number of different blocks
  * If there are enough, then motion happened
  */
-bool motion_detect() {
+/*bool motion_detect() {
     uint16_t changes = 0;
     const uint16_t blocks = (WIDTH * HEIGHT) / (BLOCK_SIZE * BLOCK_SIZE);
 
@@ -415,7 +416,7 @@ bool motion_detect() {
 /**
  * Copy current frame to previous
  */
-void update_frame() {
+/*void update_frame() {
     for (int y = 0; y < H; y++) {
         for (int x = 0; x < W; x++) {
             prev_frame[y][x] = current_frame[y][x];
@@ -427,7 +428,7 @@ void update_frame() {
  * For serial debugging
  * @param frame
  */
-void print_frame(uint16_t frame[H][W]) {
+/*void print_frame(uint16_t frame[H][W]) {
     for (int y = 0; y < H; y++) {
         for (int x = 0; x < W; x++) {
             Serial.print(frame[y][x]);
@@ -436,7 +437,7 @@ void print_frame(uint16_t frame[H][W]) {
 
         Serial.println();
     }
-}
+}*/
 
 //#######******ftp*******
 bool take_picture()
@@ -460,7 +461,7 @@ bool take_picture()
   pic_name += String( timestamp ) + String(WiFi.RSSI())+ ".jpg";
   Serial.print("Camera capture success, saved as:");
   Serial.print( pic_name );
-  
+  esp_task_wdt_reset();
 
   return true;
 }
