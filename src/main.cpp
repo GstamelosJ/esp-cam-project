@@ -58,7 +58,7 @@ char ftp_pass[]   = "esp32cam";
 camera_fb_t *fb = NULL;
 String pic_name = "esp32_cam2-";
 
-String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
+//String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
 
 String serverPath = "/upload.php";     // The default serverPath should be upload.php
@@ -109,6 +109,7 @@ void setup() {
   Serial.begin(115200);
   int timoutTimer = 40000;
   long startTimer = millis();
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   WiFi.mode(WIFI_STA);
   Serial.println();
   Serial.print("Connecting to ");
@@ -152,7 +153,7 @@ void setup() {
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // originally FRAMESIZE_SVGA;
     config.jpeg_quality = 9; //originally 10;  //0-63 lower number means higher quality
-    config.fb_count = 1;
+    config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
@@ -164,14 +165,13 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    //delay(1000);
+    delay(1000);
 
     ESP.restart();
     
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
-  esp_task_wdt_add(FTP_upload); //add current thread to WDT watch
-  esp_task_wdt_add(take_picture); //add current thread to WDT watch
+  esp_task_wdt_add(NULL); //add current thread to WDT watch
   //adjustments---------
 //sensor_t * s = esp_camera_sensor_get();
 /*s->set_brightness(s, 0);     // -2 to 2
@@ -211,10 +211,7 @@ Serial.print("RSSI: ");
   
   //sendPhoto(); 
   //update_frame();
-  if( take_picture() )
-    {
-      FTP_upload();
-    }
+
     /*if (millis() - last >= 180000)
   {
     esp_task_wdt_reset();
@@ -224,15 +221,26 @@ Serial.print("RSSI: ");
     //digitalWrite(4, LOW);
     //rtc_gpio_hold_en(GPIO_NUM_4);
     //esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
-    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-    Serial.println("Going to sleep now");
-    delay(1000);
-    esp_deep_sleep_start();
-    Serial.println("This will never be printed");
+
+   // Serial.println("This will never be printed");
   
 }
 
 void loop() {
+
+    if( take_picture() )
+    {
+      FTP_upload();
+      Serial.println("Going to sleep now");
+      delay(1000);
+      esp_deep_sleep_start();
+    }
+    else
+    {
+      Serial.println("Capture failed, sleeping");
+      esp_deep_sleep_start();
+    }
+    
   
   ////unsigned long currentMillis = millis();
   //if (currentMillis - previousMillis >= timerInterval) {
@@ -461,8 +469,6 @@ bool take_picture()
   pic_name += String( timestamp ) + String(WiFi.RSSI())+ ".jpg";
   Serial.print("Camera capture success, saved as:");
   Serial.print( pic_name );
-  esp_task_wdt_reset();
-
   return true;
 }
 
@@ -476,12 +482,15 @@ void FTP_upload()
   ftp.ChangeWorkDir("/home/uploads/"); // change it to reflect your directory
   const char *f_name = pic_name.c_str();
   ftp.NewFile( f_name );
-  if(ftp.isConnected()) ftp.WriteData(fb->buf, fb->len);
+  if(ftp.isConnected()) 
+  {
+    ftp.WriteData(fb->buf, fb->len);
+    Serial.println("The FTP uploading completed");
+  }
   else Serial.print("FTP connection Failed");
   ftp.CloseFile();
   ftp.CloseConnection();
   delay(100);
-  Serial.println("The FTP uploading completed");
   esp_task_wdt_reset();
   esp_camera_fb_return(fb);
 }
