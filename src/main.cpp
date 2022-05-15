@@ -20,6 +20,7 @@
 #include "ESP32_FTPClient.h"
 #include <TimeLib.h>
 #include <esp_task_wdt.h>
+#include "ESPAsyncWebServer.h"
 
 #define CAMERA_MODEL_AI_THINKER
 //#define CAMERA_MODEL_WROVER_KIT 
@@ -44,11 +45,11 @@ bool capture_still();
 bool motion_detect();
 void update_frame();
 void print_frame(uint16_t frame[H][W]);
-const char* ssid = "COSMOTE-189DDC";
-const char* password = "UXYebdfUddddKqAq";
+//const char* ssid = "COSMOTE-189DDC";
+//const char* password = "UXYebdfUddddKqAq";
 
-//const char* ssid = "conn-xe73110";
-//const char* password = "dc028ee73110";
+const char* ssid = "conn-xe73110";
+const char* password = "dc028ee73110";
 
 char ftp_server[] = "192.168.1.28";
 char ftp_user[]   = "esp32cam";
@@ -63,7 +64,7 @@ String pic_name = "esp32_cam2-";
 
 String serverPath = "/upload.php";     // The default serverPath should be upload.php
 
-const int serverPort = 80;
+//const int serverPort = 80;
 const char* ntpServer = "192.168.1.28";
 const long  gmtoffset_sec = 0;   //Replace with your GMT offset (seconds)
 const int   daylightOffset_sec = 0;  //Replace with your daylight offset 
@@ -102,6 +103,7 @@ String sendPhoto();
 const int timerInterval = 30000;    // time between each HTTP POST image
 unsigned long previousMillis = 0;   // last time image was sent
 ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
+AsyncWebServer server(80);
 
 void setup() {
   
@@ -208,7 +210,17 @@ delay(1000);
 Serial.print("RSSI: ");
   Serial.println(WiFi.RSSI());
   delay(1000);
-  
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", String(ESP.getFreeHeap()) );
+  });
+ 
+  server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain","ok");
+    delay(2000);
+    ESP.restart();
+  });
+ 
+  server.begin();
   //sendPhoto(); 
   //update_frame();
 
