@@ -242,9 +242,11 @@ void loop() {
 
     if( take_picture() )
     {
+      delay(1000);
       FTP_upload();
       Serial.println("Going to sleep now");
       delay(1000);
+      ESP.getFreeHeap();
       esp_deep_sleep_start();
     }
     else
