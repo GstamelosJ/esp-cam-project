@@ -230,6 +230,7 @@ void loop() {
 
     if( take_picture() )
     {
+      delay(1000);
       FTP_upload();
       Serial.println("Going to sleep now");
       delay(1000);
