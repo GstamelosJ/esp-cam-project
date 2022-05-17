@@ -9,13 +9,17 @@
   copies or substantial portions of the Software.
 */
 
-#include <Arduino.h>
-#include <WiFi.h>
-#include <WiFiClient.h>
+//#include <Arduino.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <sys/param.h>
+#include "esp_camera.h"
+#include "esp_wifi.h"
+//#include <WiFiClient.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "driver/rtc_io.h"
-#include "esp_camera.h"
 // FTP Client Lib
 #include "ESP32_FTPClient.h"
 #include <TimeLib.h>
@@ -147,6 +151,7 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
+  config.grab_mode = CAMERA_GRAB_LATEST;
 
 
 
