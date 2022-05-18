@@ -60,7 +60,7 @@ char ftp_user[]   = "esp32cam";
 char ftp_pass[]   = "esp32cam";
 
 // Camera buffer, URL and picture name
-camera_fb_t *fb = NULL;
+
 String pic_name = "esp32_cam2-";
 
 //String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
@@ -149,7 +149,7 @@ void setup() {
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000; //originally set to 20000000;
+  config.xclk_freq_hz = 16500000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
   //config.grab_mode = CAMERA_GRAB_LATEST;
 
@@ -248,10 +248,9 @@ void loop() {
     if( take_picture() )
     {
       delay(1000);
-      FTP_upload();
+     // FTP_upload();
       Serial.println("Going to sleep now");
       delay(1000);
-      ESP.getFreeHeap();
       esp_deep_sleep_start();
     }
     else
@@ -469,9 +468,17 @@ bool capture_still() {
 //#######******ftp*******
 bool take_picture()
 {
+  camera_fb_t *fb = NULL;
   char timestamp [20];
   Serial.println("Taking picture now");
 
+  fb = esp_camera_fb_get();  
+  if(!fb)
+  {
+    Serial.println("Camera capture failed");
+    return false;
+  }
+  esp_camera_fb_return(fb);
   fb = esp_camera_fb_get();  
   if(!fb)
   {
@@ -489,10 +496,7 @@ bool take_picture()
   Serial.print("Camera capture success, saved as:");
   Serial.print( pic_name );
   return true;
-}
 
-void FTP_upload()
-{
   Serial.println("Uploading via FTP");
   ftp.OpenConnection();
   
