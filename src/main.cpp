@@ -495,7 +495,7 @@ bool take_picture()
   pic_name += String( timestamp ) + String(WiFi.RSSI())+ ".jpg";
   Serial.print("Camera capture success, saved as:");
   Serial.print( pic_name );
-  return true;
+  //return true;
 
   Serial.println("Uploading via FTP");
   ftp.OpenConnection();
