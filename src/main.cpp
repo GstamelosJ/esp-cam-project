@@ -516,4 +516,5 @@ bool take_picture()
   delay(100);
   esp_task_wdt_reset();
   esp_camera_fb_return(fb);
+  return true;
 }
