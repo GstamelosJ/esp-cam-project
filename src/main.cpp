@@ -151,7 +151,7 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 16500000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //config.grab_mode = CAMERA_GRAB_LATEST;
+  config.grab_mode = CAMERA_GRAB_LATEST;
 
 
 
