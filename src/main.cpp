@@ -152,7 +152,7 @@ void setup() {
   config.xclk_freq_hz = 16500000; //originally set to 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
   config.grab_mode = CAMERA_GRAB_LATEST;
-
+  //config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
 
 
   // init with high specs to pre-allocate larger buffersfreq
@@ -174,7 +174,11 @@ void setup() {
     Serial.printf("Camera init failed with error 0x%x", err);
     delay(1000);
 
-    ESP.restart();
+    //ESP.restart();
+    digitalWrite(PWDN_GPIO_NUM, LOW);
+    delay(1000);
+    digitalWrite(PWDN_GPIO_NUM, HIGH);
+    delay(10);
     
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
