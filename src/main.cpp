@@ -169,16 +169,19 @@ void setup() {
   configTime(gmtoffset_sec, daylightOffset_sec, ntpServer);
   //delay(2000);
   // camera init
+  digitalWrite(PWDN_GPIO_NUM, LOW);
+  delay(10);
+  digitalWrite(PWDN_GPIO_NUM, HIGH);
+  delay(10);
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
     delay(1000);
-
-    //ESP.restart();
     digitalWrite(PWDN_GPIO_NUM, LOW);
     delay(1000);
     digitalWrite(PWDN_GPIO_NUM, HIGH);
     delay(10);
+    ESP.restart();
     
   }
   esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
