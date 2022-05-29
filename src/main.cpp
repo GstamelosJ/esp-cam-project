@@ -49,11 +49,11 @@
 //bool motion_detect();
 //void update_frame();
 //void print_frame(uint16_t frame[H][W]);
-const char* ssid = "COSMOTE-189DDC";
-const char* password = "UXYebdfUddddKqAq";
+//const char* ssid = "COSMOTE-189DDC";
+//const char* password = "UXYebdfUddddKqAq";
 
-//const char* ssid = "conn-xe73110";
-//const char* password = "dc028ee73110";
+const char* ssid = "conn-xe73110"; 
+const char* password = "dc028ee73110"; 
 
 char ftp_server[] = "192.168.1.28";
 char ftp_user[]   = "esp32cam";
@@ -61,7 +61,7 @@ char ftp_pass[]   = "esp32cam";
 
 // Camera buffer, URL and picture name
 
-String pic_name = "esp32_cam-";
+String pic_name = "esp32_cam2-";
 
 //String serverName = "192.168.1.28";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
