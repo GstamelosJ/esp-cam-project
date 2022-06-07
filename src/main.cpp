@@ -110,7 +110,7 @@ ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
 AsyncWebServer server(80);
 
 void setup() {
-  
+  uint8_t wifi_cnt=0;
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
   int timoutTimer = 40000;
@@ -121,10 +121,11 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);  
-  while (WiFi.status() != WL_CONNECTED) {
+  while ((WiFi.status() != WL_CONNECTED)&& (wifi_cnt<3)) {
     Serial.print(".");
     delay(500);
     if ((startTimer+timoutTimer) < millis()) ESP.restart();
+    wifi_cnt++;
   }
   Serial.println();
   Serial.print("ESP32-CAM IP Address: ");
