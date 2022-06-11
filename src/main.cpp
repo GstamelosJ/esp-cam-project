@@ -49,11 +49,11 @@
 //bool motion_detect();
 //void update_frame();
 //void print_frame(uint16_t frame[H][W]);
-//const char* ssid = "COSMOTE-189DDC";
-//const char* password = "UXYebdfUddddKqAq";
+const char* ssid = "COSMOTE-189DDC";
+const char* password = "UXYebdfUddddKqAq";
 
-const char* ssid = "conn-xe73110"; 
-const char* password = "dc028ee73110"; 
+//const char* ssid = "conn-xe73110"; 
+//const char* password = "dc028ee73110"; 
 
 char ftp_server[] = "192.168.1.28";
 char ftp_user[]   = "esp32cam";
@@ -109,8 +109,9 @@ unsigned long previousMillis = 0;   // last time image was sent
 ESP32_FTPClient ftp (ftp_server, ftp_user, ftp_pass,5000,2);
 AsyncWebServer server(80);
 
+
 void setup() {
-  uint8_t wifi_cnt=0;
+  //uint8_t wifi_cnt=0;
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
   int timoutTimer = 40000;
@@ -121,11 +122,15 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);  
-  while ((WiFi.status() != WL_CONNECTED)&& (wifi_cnt<3)) {
+  while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(500);
-    if ((startTimer+timoutTimer) < millis()) ESP.restart();
-    wifi_cnt++;
+    if ((startTimer+timoutTimer) < millis()) 
+    {
+      //ESP.restart();
+      break;
+    }
+    
   }
   Serial.println();
   Serial.print("ESP32-CAM IP Address: ");
