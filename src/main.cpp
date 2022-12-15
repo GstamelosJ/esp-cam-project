@@ -72,7 +72,7 @@ String serverPath = "/upload.php";     // The default serverPath should be uploa
 const char* ntpServer = "192.168.1.28";
 const long  gmtoffset_sec = 0;   //Replace with your GMT offset (seconds)
 const int   daylightOffset_sec = 0;  //Replace with your daylight offset 
-
+long startTimer;
 WiFiClient client;
 unsigned long last=millis();
 
@@ -115,7 +115,7 @@ void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
   int timoutTimer = 40000;
-  long startTimer = millis();
+  startTimer = millis();
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   WiFi.mode(WIFI_STA);
   Serial.println();
@@ -258,19 +258,24 @@ Serial.print("RSSI: ");
 
 void loop() {
 
-    if( take_picture() )
     {
       delay(1000);
      // FTP_upload();
+     if((startTimer+2000) < millis()){
+        if( take_picture() ) {
       Serial.println("Going to sleep now");
       delay(1000);
-      esp_deep_sleep_start();
+      //esp_deep_sleep_start();
     }
     else
     {
       Serial.println("Capture failed, sleeping");
-      esp_deep_sleep_start();
+      //esp_deep_sleep_start();
     }
+      startTimer=millis();
+     }
+    
+    }  
     
   
   ////unsigned long currentMillis = millis();
