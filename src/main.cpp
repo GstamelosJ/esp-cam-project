@@ -116,7 +116,8 @@ void setup() {
   Serial.begin(115200);
   int timoutTimer = 40000;
   startTimer = millis();
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0);
   WiFi.mode(WIFI_STA);
   Serial.println();
   Serial.print("Connecting to ");
@@ -261,18 +262,19 @@ void loop() {
     {
       delay(1000);
      // FTP_upload();
-     if((startTimer+2000) < millis()){
+     if((startTimer+6000) < millis()){
         if( take_picture() ) {
       Serial.println("Going to sleep now");
       delay(1000);
-      //esp_deep_sleep_start();
+      esp_deep_sleep_start();
     }
     else
     {
       Serial.println("Capture failed, sleeping");
-      //esp_deep_sleep_start();
+      esp_deep_sleep_start();
     }
       startTimer=millis();
+      pic_name = "esp32_cam2-";
      }
     
     }  
